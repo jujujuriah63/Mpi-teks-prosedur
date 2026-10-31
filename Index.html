@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MPI Teks Prosedur - Kelas 10 SMK</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+ body{font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(160deg,#dbeafe,#eff6ff 60%,#bfdbfe);min-height:100vh;color:#1e3a8a}
+ .scr{display:none;min-height:100vh;padding:4.5rem 1rem 2rem}.scr.on{display:block;animation:fi .4s}
+ @keyframes fi{from{opacity:0;transform:translateY(12px)}to{opacity:1}}
+ @keyframes pop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+ @keyframes flo{50%{transform:translateY(-10px)}}
+ .btn{background:#2563eb;color:#fff;font-weight:700;padding:.7rem 1.4rem;border-radius:.9rem;box-shadow:0 4px 0 #1e3a8a;transition:.15s;cursor:pointer}
+ .btn:hover{background:#1d4ed8;transform:translateY(-2px)}.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #1e3a8a}
+ .btn.lt{background:#fff;color:#1d4ed8;box-shadow:0 4px 0 #93c5fd}.btn.lt:hover{background:#dbeafe}
+ .btn.ok{background:#16a34a;box-shadow:0 4px 0 #166534}.btn.no{background:#dc2626;box-shadow:0 4px 0 #7f1d1d}
+ .btn:disabled{opacity:.45;pointer-events:none}
+ .card{background:#fff;border-radius:1.2rem;box-shadow:0 6px 20px rgba(30,64,175,.15);padding:1.2rem}
+ .wrap{max-width:760px;margin:0 auto}
+ .chip{display:inline-block;background:#dbeafe;border:2px solid #60a5fa;border-radius:.7rem;padding:.3rem .8rem;margin:.2rem;cursor:grab;user-select:none;font-weight:600}
+ .chip.sel{background:#2563eb;color:#fff}
+ .blank{display:inline-block;min-width:110px;border-bottom:3px dashed #2563eb;text-align:center;font-weight:700;color:#1d4ed8;padding:0 .4rem}
+ .w{display:inline-block;padding:.15rem .4rem;margin:.1rem;border-radius:.4rem;cursor:pointer;border:2px solid transparent}
+ .w.sel{background:#2563eb;color:#fff}.w.right{background:#16a34a;color:#fff}.w.wrong{background:#dc2626;color:#fff}
+ .opt{display:block;width:100%;text-align:left;background:#eff6ff;border:2px solid #93c5fd;border-radius:.8rem;padding:.7rem 1rem;margin:.4rem 0;cursor:pointer;font-weight:600}
+ .opt.right{background:#bbf7d0;border-color:#16a34a}.opt.wrong{background:#fecaca;border-color:#dc2626}
+ .tab{padding:.5rem 1rem;border-radius:.8rem;font-weight:700;background:#fff;color:#1d4ed8;border:2px solid #93c5fd;cursor:pointer}
+ .tab.on{background:#2563eb;color:#fff;border-color:#2563eb}
+ #home{position:fixed;top:.7rem;left:.7rem;z-index:50;display:none}
+ .cert{border:10px double #1d4ed8;background:#fff;padding:2rem;text-align:center}
+ @media print{body *{visibility:hidden}.cert,.cert *{visibility:visible}.cert{position:absolute;left:0;top:0;width:100%}}
+</style>
+</head>
+<body>
+<button id="home" class="btn" onclick="sfx();go('menu')">🏠 HOME</button>
+
+<!-- SPLASH -->
+<section id="splash" class="scr on flex flex-col items-center justify-center text-center" style="padding-top:2rem">
+  <div style="animation:pop .9s both;font-size:5rem"><span style="display:inline-block;animation:flo 2s infinite">📝</span></div>
+  <p class="font-bold tracking-widest text-blue-600 mt-3" style="animation:pop 1s .2s both">MEDIA PEMBELAJARAN INTERAKTIF</p>
+  <h1 class="text-5xl md:text-7xl font-extrabold text-blue-800 mt-2" style="animation:pop 1s .4s both">TEKS PROSEDUR</h1>
+  <p class="text-xl mt-3" style="animation:pop 1s .6s both">Bahasa Indonesia • Kelas 10 SMK</p>
+  <button class="btn text-2xl mt-8" style="animation:pop 1s .8s both;padding:.9rem 3rem" onclick="startApp()">▶ MULAI</button>
+  <p class="mt-10 text-sm" style="animation:pop 1s 1s both">Pengembang: Juju Juriah, S.Pd. • 2026</p>
+</section>
+
+<!-- MENU -->
+<section id="menu" class="scr"><div class="wrap text-center">
+  <h2 class="text-4xl font-extrabold text-blue-800">MENU UTAMA</h2>
+  <p class="mb-6">Pilih menu untuk mulai belajar!</p>
+  <div class="grid grid-cols-2 gap-4">
+    <button class="btn text-xl py-6" onclick="sfx();go('beranda')">🏡<br>BERANDA</button>
+    <button class="btn text-xl py-6" onclick="sfx();go('materi');tabShow(0)">📚<br>MATERI</button>
+    <button class="btn text-xl py-6" onclick="sfx();go('simulasi');simIntro()">🎯<br>SIMULASI</button>
+    <button class="btn text-xl py-6" onclick="sfx();go('kuis');kuisMenu()">🎮<br>KUIS</button>
+  </div>
+  <button class="btn lt mt-6" onclick="sfx();$('#set').classList.toggle('hidden')">⚙ SETTING</button>
+  <div id="set" class="card mt-3 hidden text-left">
+    <div class="flex items-center justify-between mb-3"><b>🎵 Musik Latar</b>
+      <button id="musBtn" class="btn" onclick="toggleMusic()">ON</button></div>
+    <div><b>🔊 Volume</b> <span id="volv">60%</span>
+      <input id="vol" type="range" min="0" max="100" value="60" class="w-full" oninput="setVol(this.value)"></div>
+  </div>
+  <p class="mt-8 text-sm">Pengembang: Juju Juriah, S.Pd. • 2026</p>
+</div></section>
+
+<!-- BERANDA -->
+<section id="beranda" class="scr"><div class="wrap">
+  <h2 class="text-3xl font-extrabold text-center mb-4">BERANDA</h2>
+  <div class="card mb-4"><h3 class="font-bold text-xl mb-1">🎓 Identitas Media</h3>
+    <p>Mata Pelajaran: Bahasa Indonesia<br>Sasaran: Kelas 10 SMK<br>Tema: Teks Prosedur</p></div>
+  <div class="card mb-4"><h3 class="font-bold text-xl mb-1">🎯 Tujuan Pembelajaran</h3>
+    <p>Setelah menggunakan media ini, siswa dapat <b>membuat teks prosedur</b> dengan struktur dan kebahasaan yang tepat.</p></div>
+  <div class="card mb-4"><h3 class="font-bold text-xl mb-1">🧭 Petunjuk</h3>
+    <ol class="list-decimal ml-5"><li>Pelajari menu <b>Materi</b>.</li><li>Asah kemampuan di menu <b>Kuis</b> (4 game, 3 level).</li><li>Kerjakan 10 soal <b>Simulasi</b> dan raih <b>Sertifikat</b>.</li></ol></div>
+  <p class="text-center text-sm">Pengembang: Juju Juriah, S.Pd. • 2026</p>
+</div></section>
+
+<!-- MATERI -->
+<section id="materi" class="scr"><div class="wrap">
+  <h2 class="text-3xl font-extrabold text-center mb-4">MATERI</h2>
+  <div id="tabs" class="flex flex-wrap gap-2 justify-center mb-4"></div>
+  <div id="tabBody" class="card"></div>
+  <div class="flex justify-between mt-4"><button class="btn lt" onclick="sfx();tabShow(curTab-1)">◀ Sebelumnya</button><button class="btn" onclick="sfx();tabShow(curTab+1)">Berikutnya ▶</button></div>
+</div></section>
+
+<!-- KUIS -->
+<section id="kuis" class="scr"><div class="wrap" id="kuisBody"></div></section>
+
+<!-- SIMULASI -->
+<section id="simulasi" class="scr"><div class="wrap" id="simBody"></div></section>
+
+<!-- SERTIFIKAT -->
+<section id="sertif" class="scr"><div class="wrap">
+  <div class="cert">
+    <div style="font-size:3rem">🏆</div>
+    <h2 class="text-3xl font-extrabold text-blue-800">SERTIFIKAT PENCAPAIAN</h2>
+    <p class="mt-4">Diberikan kepada:</p>
+    <p id="cNama" class="text-4xl font-extrabold text-blue-700 my-2"></p>
+    <p>telah menyelesaikan simulasi <b>Teks Prosedur</b><br>Bahasa Indonesia Kelas 10 SMK</p>
+    <p class="mt-3">Nilai: <b id="cNilai" class="text-3xl text-blue-800"></b></p>
+    <p id="cPred" class="font-bold"></p>
+    <p id="cTgl" class="mt-3 text-sm"></p>
+    <p class="mt-4 text-sm">Pengembang MPI: Juju Juriah, S.Pd. • 2026</p>
+  </div>
+  <div class="text-center mt-4"><button class="btn" onclick="window.print()">🖨 CETAK / SIMPAN PDF</button></div>
+</div></section>
+
+<script>
+/* ============ KONFIGURASI NILAI KE SHEET ============
+ Tempel URL Web App (Google Apps Script) pada SHEET_URL agar nilai masuk otomatis ke lembar kerja (Sheet).
+ Kosongkan = nilai hanya tersimpan di perangkat. Lihat petunjuk di bawah file ini. */
+const SHEET_URL = "";
+
+const $=s=>document.querySelector(s);
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+
+/* ============ AUDIO (disintesis, tanpa file) ============ */
+let AC,master,musicOn=true,vol=.6,musicTimer=null,started=false;
+function initAudio(){if(AC)return;AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=vol;master.connect(AC.destination)}
+function tone(f,t0,d,type='sine',g=.25){if(!AC)return;const o=AC.createOscillator(),e=AC.createGain();o.type=type;o.frequency.value=f;
+ e.gain.setValueAtTime(g,t0);e.gain.exponentialRampToValueAtTime(.001,t0+d);o.connect(e);e.connect(master);o.start(t0);o.stop(t0+d)}
+function sfx(k){if(!AC)return;const t=AC.currentTime;
+ if(k==='ok'){tone(660,t,.12,'triangle',.35);tone(880,t+.1,.2,'triangle',.35)}
+ else if(k==='no'){tone(220,t,.25,'sawtooth',.2)}
+ else if(k==='win'){[523,659,784,1047].forEach((f,i)=>tone(f,t+i*.12,.25,'triangle',.35))}
+ else tone(520,t,.08,'square',.15)}
+const MEL=[523,587,659,784,659,587,523,392, 440,523,587,659,587,523,440,392];
+let ni=0;
+function startMusic(){stopMusic();if(!musicOn||!AC)return;
+ musicTimer=setInterval(()=>{const t=AC.currentTime,f=MEL[ni%MEL.length];tone(f,t,.3,'triangle',.07);if(ni%4===0)tone(f/2,t,.5,'sine',.08);ni++},320)}
+function stopMusic(){clearInterval(musicTimer);musicTimer=null}
+function toggleMusic(){musicOn=!musicOn;$('#musBtn').textContent=musicOn?'ON':'OFF';musicOn?startMusic():stopMusic();sfx()}
+function setVol(v){vol=v/100;$('#volv').textContent=v+'%';if(master)master.gain.value=vol}
+function startApp(){initAudio();if(AC.state==='suspended')AC.resume();sfx();startMusic();go('menu')}
+
+/* ============ NAVIGASI ============ */
+function go(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));$('#'+id).classList.add('on');
+ $('#home').style.display=id==='splash'?'none':'block';window.scrollTo(0,0)}
+
+/* ============ MATERI ============ */
+const TABS=[
+ ['Pengertian',`<h3 class="font-bold text-xl mb-2">Apa itu Teks Prosedur?</h3><p>Teks prosedur adalah teks yang berisi <b>langkah-langkah atau cara</b> melakukan/membuat sesuatu secara berurutan agar tujuan tercapai.</p>
+  <p class="mt-3 font-semibold">Klik untuk melihat jenisnya:</p>
+  ${rv('Petunjuk penggunaan alat','Contoh: cara memakai mesin cuci, cara menggunakan APAR.')}
+  ${rv('Resep / cara membuat','Contoh: cara membuat nasi goreng, cara membuat sabun.')}
+  ${rv('Tata tertib & keselamatan','Contoh: prosedur K3 di bengkel, cara evakuasi saat gempa.')}`],
+ ['Struktur',`<h3 class="font-bold text-xl mb-2">Struktur Teks Prosedur</h3>
+  ${rv('1. Judul','Menyatakan hal yang akan dibuat/dilakukan. Contoh: Cara Membuat Telur Dadar.')}
+  ${rv('2. Tujuan','Menjelaskan maksud dibuatnya prosedur. Contoh: agar dapat membuat sarapan sehat.')}
+  ${rv('3. Alat dan Bahan','Daftar benda yang diperlukan beserta ukurannya.')}
+  ${rv('4. Langkah-langkah','Urutan kegiatan yang harus dilakukan, dari awal sampai akhir.')}
+  ${rv('5. Penutup (opsional)','Hasil akhir atau tips/peringatan keselamatan.')}`],
+ ['Kebahasaan',`<h3 class="font-bold text-xl mb-2">Ciri Kebahasaan</h3>
+  ${rv('Kalimat perintah (imperatif)','Diawali kata kerja dasar: Potong, Aduk, Tekan, Panaskan.')}
+  ${rv('Kata penghubung urutan (konjungsi temporal)','Pertama, kedua, kemudian, selanjutnya, setelah itu, terakhir.')}
+  ${rv('Kata kerja aktif & jelas','Singkat dan tidak bermakna ganda, misal: "Masukkan dua sendok gula."')}
+  ${rv('Menggunakan angka / ukuran','Contoh: 2 sendok, 100 ml, 5 menit, 30 cm.')}`],
+ ['Contoh',`<h3 class="font-bold text-xl mb-2">Contoh Teks Prosedur</h3>
+  <div class="bg-blue-50 rounded-xl p-4"><b>Cara Membuat Teh Manis</b><br><i>Tujuan:</i> menyajikan minuman hangat.<br><i>Alat & bahan:</i> gelas, sendok, 1 kantong teh, 2 sendok gula, 200 ml air panas.<br>
+  <i>Langkah:</i><ol class="list-decimal ml-6"><li>Pertama, masukkan kantong teh ke dalam gelas.</li><li>Tuang air panas hingga penuh.</li><li>Kemudian, tambahkan dua sendok gula.</li><li>Aduk selama 1 menit.</li><li>Terakhir, angkat kantong teh dan sajikan.</li></ol></div>`],
+ ['Cara Menulis',`<h3 class="font-bold text-xl mb-2">Langkah Menulis Teks Prosedur</h3>
+  ${rv('1. Tentukan topik','Pilih kegiatan yang kamu kuasai, misalnya cara menyervis sepeda motor.')}
+  ${rv('2. Tulis judul & tujuan','Judul diawali "Cara ..." dan tujuan jelas.')}
+  ${rv('3. Daftar alat dan bahan','Lengkap dengan jumlah/ukuran.')}
+  ${rv('4. Susun langkah berurutan','Gunakan kalimat perintah dan kata penghubung urutan.')}
+  ${rv('5. Periksa dan sunting','Cek urutan, ejaan, dan kejelasan; uji dengan teman.')}`]
+];
+function rv(h,b){return `<div class="mb-2"><button class="btn lt w-full text-left" onclick="sfx();const n=this.nextElementSibling;n.classList.toggle('hidden')">${h}</button><div class="hidden bg-blue-50 rounded-xl p-3 mt-1">${b}</div></div>`}
+let curTab=0;
+function tabShow(i){if(i<0||i>=TABS.length)return;curTab=i;
+ $('#tabs').innerHTML=TABS.map((t,k)=>`<button class="tab ${k===i?'on':''}" onclick="sfx();tabShow(${k})">${t[0]}</button>`).join('');
+ $('#tabBody').innerHTML=TABS[i][1]}
+
+/* ============ KUIS: 4 GAME x 3 LEVEL ============ */
+const GAMES=[
+ {id:'pg',ic:'❓',nm:'Kuis Pilihan',ds:'Pilih jawaban yang benar'},
+ {id:'ur',ic:'🔢',nm:'Susun Langkah',ds:'Urutkan langkah dengan benar'},
+ {id:'cc',ic:'🔗',nm:'Cocokkan',ds:'Pasangkan istilah & arti'},
+ {id:'mk',ic:'🖍',nm:'Tandai Kata',ds:'Klik kata yang diminta'}];
+const DATA={
+ pg:[[["Teks prosedur berisi ...",["Langkah-langkah melakukan sesuatu","Cerita khayalan","Pendapat penulis"],0],["Cara membuat es teh termasuk teks ...",["Prosedur","Narasi","Puisi"],0],["Bagian yang memuat daftar benda yang diperlukan adalah ...",["Alat dan bahan","Judul","Penutup"],0]],
+     [["Kalimat perintah dalam prosedur diawali kata kerja ...",["Dasar (Potong, Aduk)","Pasif (Dipotong)","Sifat (Cantik)"],0],["Kata penghubung urutan berikut adalah ...",["Kemudian","Namun","Sebab"],0],["Judul teks prosedur yang tepat ...",["Cara Merawat Sepatu","Sepatu Baruku","Mengapa Sepatu Penting"],0]],
+     [["Urutan struktur yang benar ...",["Judul-Tujuan-Alat/Bahan-Langkah","Langkah-Judul-Tujuan-Bahan","Bahan-Judul-Langkah-Tujuan"],0],["Kalimat langkah yang BENAR sebagai prosedur ...",["Tekan tombol power selama 3 detik.","Tombol power sedang ditekan olehnya.","Dia menekan tombol power kemarin."],0],["Mengapa teks prosedur harus berurutan?",["Agar tujuan tercapai tanpa kesalahan","Agar teks terlihat panjang","Agar menghibur pembaca"],0]]],
+ ur:[[["Panaskan minyak","Masukkan telur kocok","Angkat dan sajikan"],["Siapkan alat dan bahan","Tuang air panas ke gelas","Masukkan teh","Aduk lalu sajikan"]][0],
+     ["Siapkan alat dan bahan","Tuang air panas ke gelas","Masukkan kantong teh","Aduk lalu sajikan"],
+     ["Colokkan kabel setrika","Atur suhu sesuai kain","Semprot kain dengan air","Gosok kain searah serat","Cabut kabel dan simpan"]],
+ cc:[[["Judul","Nama hal yang dibuat"],["Tujuan","Maksud prosedur"],["Langkah","Urutan kegiatan"]],
+     [["Imperatif","Kalimat perintah"],["Kemudian","Penanda urutan"],["Bahan","Benda yang diperlukan"],["Penutup","Tips/hasil akhir"]],
+     [["Pertama","Awal langkah"],["Terakhir","Akhir langkah"],["Konjungsi temporal","Kata penghubung waktu"],["Ukuran","Takaran, mis. 2 sendok"],["Prosedur","Tahapan kerja berurutan"]]],
+ mk:[[["Tandai kata kerja perintah: Potong wortel kecil-kecil.","Potong"],["Tandai kata kerja perintah: Aduk adonan sampai rata.","Aduk"],["Tandai kata kerja perintah: Tekan tombol hijau.","Tekan"]],
+     [["Tandai penanda urutan: Kemudian panaskan minyak.","Kemudian"],["Tandai penanda urutan: Terakhir sajikan selagi hangat.","Terakhir"],["Tandai penanda urutan: Selanjutnya masukkan garam.","Selanjutnya"]],
+     [["Tandai kata takaran: Masukkan dua sendok gula.","dua"],["Tandai kata yang menyatakan waktu: Rebus selama sepuluh menit.","sepuluh"],["Tandai alat: Gunakan spatula untuk membalik.","spatula"]]]
+};
+let prog={pg:1,ur:1,cc:1,mk:1}; // level terbuka
+function kuisMenu(){$('#kuisBody').innerHTML=`<h2 class="text-3xl font-extrabold text-center mb-4">KUIS GAME</h2><div class="grid grid-cols-2 gap-4">`+
+ GAMES.map(g=>`<button class="btn py-5" onclick="sfx();gameLevels('${g.id}')"><span class="text-4xl">${g.ic}</span><br>${g.nm}<br><small class="font-normal">${g.ds}</small></button>`).join('')+`</div>`}
+function gameLevels(g){const G=GAMES.find(x=>x.id===g);
+ $('#kuisBody').innerHTML=`<h2 class="text-3xl font-extrabold text-center mb-1">${G.ic} ${G.nm}</h2><p class="text-center mb-4">Selesaikan level untuk membuka level berikutnya</p><div class="grid grid-cols-3 gap-3">`+
+ [1,2,3].map(l=>`<button class="btn ${l>prog[g]?'':''}" ${l>prog[g]?'disabled':''} onclick="sfx();playLevel('${g}',${l})">Level ${l}<br>${l>prog[g]?'🔒':'⭐'}</button>`).join('')+`</div><div class="text-center mt-5"><button class="btn lt" onclick="sfx();kuisMenu()">◀ Kembali</button></div>`}
+function levelEnd(g,l,ok,tot){const pass=ok/tot>=.6;if(pass&&l===prog[g]&&l<3)prog[g]=l+1;sfx(pass?'win':'no');
+ $('#kuisBody').innerHTML=`<div class="card text-center"><div class="text-6xl">${pass?'🎉':'💪'}</div><h3 class="text-2xl font-bold my-2">${pass?'Level Selesai!':'Coba Lagi!'}</h3><p>Skor: <b>${ok}/${tot}</b> (minimal 60% untuk lulus)</p>
+ <div class="flex gap-2 justify-center mt-4 flex-wrap"><button class="btn lt" onclick="sfx();playLevel('${g}',${l})">🔄 Ulangi</button>${pass&&l<3?`<button class="btn" onclick="sfx();playLevel('${g}',${l+1})">Level ${l+1} ▶</button>`:''}<button class="btn lt" onclick="sfx();gameLevels('${g}')">Pilih Level</button></div></div>`}
+function playLevel(g,l){const d=DATA[g][l-1],head=`<h3 class="text-xl font-bold text-center mb-3">${GAMES.find(x=>x.id===g).nm} • Level ${l}</h3>`;
+ if(g==='pg'||g==='mk'){let i=0,ok=0;
+  const q=()=>{if(i>=d.length)return levelEnd(g,l,ok,d.length);const it=d[i];let h=`${head}<div class="card"><p class="text-sm mb-1">Soal ${i+1}/${d.length}</p>`;
+   if(g==='pg'){const o=shuffle(it[1].map((t,k)=>[t,k]));h+=`<p class="font-bold mb-2">${it[0]}</p>`+o.map(x=>`<button class="opt" data-k="${x[1]}">${x[0]}</button>`).join('')+'</div>';$('#kuisBody').innerHTML=h;
+    document.querySelectorAll('#kuisBody .opt').forEach(b=>b.onclick=()=>{const c=+b.dataset.k===it[2];document.querySelectorAll('#kuisBody .opt').forEach(x=>x.style.pointerEvents='none');b.classList.add(c?'right':'wrong');if(c)ok++;sfx(c?'ok':'no');i++;setTimeout(q,900)})}
+   else{const [ins,ans]=it[0].split(': '),words=ins.length?it[0].slice(it[0].indexOf(': ')+2):'';h+=`<p class="font-bold mb-2">${it[0].split(': ')[0]}:</p><p class="text-xl">`+words.split(' ').map(w=>`<span class="w" data-w="${w.replace(/[.,]/g,'')}">${w}</span>`).join(' ')+'</p></div>';$('#kuisBody').innerHTML=h;
+    document.querySelectorAll('#kuisBody .w').forEach(b=>b.onclick=()=>{const c=b.dataset.w.toLowerCase()===it[1].toLowerCase();document.querySelectorAll('#kuisBody .w').forEach(x=>x.style.pointerEvents='none');b.classList.add(c?'right':'wrong');if(c)ok++;sfx(c?'ok':'no');i++;setTimeout(q,900)})}};q()}
+ else if(g==='ur'){let n=0;const ord=shuffle(d.map((t,k)=>[t,k]));
+  $('#kuisBody').innerHTML=head+`<div class="card"><p class="mb-2">Klik langkah sesuai urutan yang benar:</p><div id="uo"></div><hr class="my-3"><div id="up" class="flex flex-col gap-2"></div></div>`;
+  ord.forEach(([t,k])=>{const b=document.createElement('button');b.className='opt';b.textContent=t;b.onclick=()=>{if(k===n){b.classList.add('right');b.style.pointerEvents='none';n++;sfx('ok');$('#uo').innerHTML='✅ '+n+'/'+d.length;if(n===d.length)setTimeout(()=>levelEnd(g,l,d.length,d.length),700)}else{b.classList.add('wrong');sfx('no');setTimeout(()=>b.classList.remove('wrong'),500)}};$('#up').appendChild(b)})}
+ else{let sel=null,done=0,miss=0;const L=shuffle(d.map((p,k)=>[p[0],k])),R=shuffle(d.map((p,k)=>[p[1],k]));
+  $('#kuisBody').innerHTML=head+`<div class="card"><p class="mb-2">Klik istilah di kiri lalu pasangannya di kanan.</p><div class="grid grid-cols-2 gap-3"><div id="cl"></div><div id="cr"></div></div></div>`;
+  const mk=(arr,side,box)=>arr.forEach(([t,k])=>{const b=document.createElement('button');b.className='opt';b.textContent=t;b.dataset.k=k;b.dataset.s=side;
+   b.onclick=()=>{sfx();if(side==='l'){document.querySelectorAll('#cl .opt').forEach(x=>x.classList.remove('wrong'));sel=b;b.style.outline='3px solid #2563eb'}
+    else if(sel){const c=sel.dataset.k===b.dataset.k;if(c){sel.classList.add('right');b.classList.add('right');sel.style.pointerEvents=b.style.pointerEvents='none';sel.style.outline='';sfx('ok');done++;if(done===d.length)setTimeout(()=>levelEnd(g,l,Math.max(d.length-miss,0),d.length),700)}else{miss++;sfx('no');b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),400)}sel.style.outline='';sel=null}};$(box).appendChild(b)});
+  mk(L,'l','#cl');mk(R,'r','#cr')}}
+
+/* ============ SIMULASI: 10 SOAL ============ */
+const SIM=[
+ {t:'drag',q:'Teks prosedur berisi ___ untuk melakukan sesuatu.',b:['langkah-langkah','dongeng','opini'],a:'langkah-langkah'},
+ {t:'drag',q:'Kalimat perintah diawali kata kerja dasar, misalnya ___ wortel.',b:['potong','dipotong','memotongnya'],a:'potong'},
+ {t:'drag',q:'Bagian yang memuat daftar benda yang diperlukan disebut ___.',b:['alat dan bahan','kesimpulan','amanat'],a:'alat dan bahan'},
+ {t:'drag',q:'Kata penanda urutan di awal langkah adalah ___.',b:['pertama','akibatnya','misalnya'],a:'pertama'},
+ {t:'pg',q:'Tujuan utama teks prosedur adalah ...',o:['Memandu pembaca melakukan sesuatu dengan benar','Menghibur pembaca','Menceritakan pengalaman pribadi'],a:0},
+ {t:'pg',q:'Kalimat langkah yang tepat adalah ...',o:['Tuang air panas ke dalam gelas.','Air panas dituangkan oleh Ani kemarin.','Gelas itu sangat indah.'],a:0},
+ {t:'pg',q:'Judul teks prosedur yang tepat adalah ...',o:['Cara Membuat Telur Dadar','Telur Dadar Kesukaanku','Sejarah Telur Dadar'],a:0},
+ {t:'mark',q:'Tandai kata kerja perintah:',s:'Potong wortel menjadi dadu kecil.',a:'Potong'},
+ {t:'mark',q:'Tandai kata penanda urutan:',s:'Kemudian panaskan minyak di wajan.',a:'Kemudian'},
+ {t:'mark',q:'Tandai kata yang menyatakan jumlah:',s:'Masukkan dua sendok gula ke dalam gelas.',a:'dua'}];
+let sim={i:0,sc:0,nama:'',ans:null,locked:false};
+function simIntro(){sim={i:0,sc:0,nama:'',ans:null,locked:false};
+ $('#simBody').innerHTML=`<div class="card text-center"><h2 class="text-3xl font-extrabold mb-2">SIMULASI</h2><p>10 soal: Drag the Word, Pilihan Ganda, dan Mark the Word.</p>
+ <label class="block mt-4 font-bold" for="nama">Tulis nama lengkapmu:</label>
+ <input id="nama" type="text" autocomplete="off" maxlength="40" placeholder="Nama siswa" class="border-2 border-blue-400 rounded-xl p-3 w-full max-w-sm mt-2 text-lg text-center" style="outline:none">
+ <p id="nerr" class="text-red-600 text-sm h-5"></p><button class="btn mt-2" onclick="simStart()">MULAI SIMULASI ▶</button></div>`}
+function simStart(){const v=$('#nama').value.trim();if(v.length<2){$('#nerr').textContent='Nama wajib diisi dulu ya.';return}
+ sim.nama=v;sfx();simQ()}
+function simQ(){const it=SIM[sim.i];sim.ans=null;sim.locked=false;
+ let h=`<div class="card"><div class="flex justify-between text-sm mb-2"><b>Soal ${sim.i+1}/10</b><span>${{drag:'Drag the Word',pg:'Pilihan Ganda',mark:'Mark the Word'}[it.t]}</span></div>
+ <div class="w-full bg-blue-100 rounded-full h-2 mb-3"><div class="bg-blue-600 h-2 rounded-full" style="width:${sim.i*10}%"></div></div>`;
+ if(it.t==='drag'){const p=it.q.split('___');h+=`<p class="text-lg">${p[0]}<span id="bl" class="blank" ondragover="event.preventDefault()" ondrop="dropW(event)" onclick="putSel()">&nbsp;</span>${p[1]}</p>
+  <p class="text-sm mt-3">Seret kata ke kotak kosong (atau klik kata, lalu klik kotak):</p><div>`+shuffle(it.b).map(w=>`<span class="chip" draggable="true" ondragstart="event.dataTransfer.setData('text',this.textContent)" onclick="selChip(this)">${w}</span>`).join('')+'</div>'}
+ else if(it.t==='pg'){h+=`<p class="font-bold mb-2">${it.q}</p>`+shuffle(it.o.map((t,k)=>[t,k])).map(x=>`<button class="opt" data-k="${x[1]}" onclick="pickPg(this)">${x[0]}</button>`).join('')}
+ else{h+=`<p class="font-bold mb-2">${it.q}</p><p class="text-xl">`+it.s.split(' ').map(w=>`<span class="w" data-w="${w.replace(/[.,]/g,'')}" onclick="pickW(this)">${w}</span>`).join(' ')+'</p>'}
+ h+=`<div class="text-right mt-4"><button class="btn" onclick="simNext()">${sim.i===9?'SELESAI ✔':'Lanjut ▶'}</button></div></div>`;$('#simBody').innerHTML=h}
+let selC=null;
+function selChip(c){sfx();document.querySelectorAll('.chip').forEach(x=>x.classList.remove('sel'));c.classList.add('sel');selC=c}
+function putSel(){if(selC){sim.ans=selC.textContent;$('#bl').textContent=sim.ans;sfx()}}
+function dropW(e){e.preventDefault();sim.ans=e.dataTransfer.getData('text');$('#bl').textContent=sim.ans;sfx()}
+function pickPg(b){sfx();document.querySelectorAll('#simBody .opt').forEach(x=>x.style.outline='');b.style.outline='3px solid #2563eb';sim.ans=+b.dataset.k}
+function pickW(b){sfx();document.querySelectorAll('#simBody .w').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sim.ans=b.dataset.w}
+function simNext(){const it=SIM[sim.i];if(sim.ans===null){sfx('no');return}
+ const ok=it.t==='pg'?sim.ans===it.a:String(sim.ans).toLowerCase()===it.a.toLowerCase();if(ok)sim.sc++;sfx(ok?'ok':'no');sim.i++;
+ sim.i>=10?simFinish():simQ()}
+function simFinish(){const nilai=sim.sc*10;sfx('win');
+ $('#cNama').textContent=sim.nama;$('#cNilai').textContent=nilai;
+ $('#cPred').textContent=nilai>=90?'Predikat: Sangat Baik':nilai>=75?'Predikat: Baik':nilai>=60?'Predikat: Cukup':'Predikat: Terus Berlatih';
+ $('#cTgl').textContent=new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+ kirimNilai(sim.nama,nilai);go('sertif')}
+function kirimNilai(nama,nilai){
+ try{const arr=JSON.parse(localStorage.getItem('nilaiMPI')||'[]');arr.push({nama,nilai,waktu:new Date().toISOString()});localStorage.setItem('nilaiMPI',JSON.stringify(arr))}catch(e){}
+ if(!SHEET_URL)return;
+ fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({nama,nilai,mapel:'B. Indonesia',tema:'Teks Prosedur',waktu:new Date().toLocaleString('id-ID')})}).catch(()=>{})}
+</script>
+<!--
+ PETUNJUK MENGHUBUNGKAN NILAI KE SHEET (spreadsheet):
+ 1. Buat Google Sheet baru > Extensions (Ekstensi) > Apps Script, lalu tempel:
+    function doPost(e){var d=JSON.parse(e.postData.contents);
+      SpreadsheetApp.getActiveSheet().appendRow([d.waktu,d.nama,d.nilai,d.mapel,d.tema]);
+      return ContentService.createTextOutput('ok');}
+ 2. Deploy > New deployment > Web app > Execute as: Me, Who has access: Anyone > salin URL.
+ 3. Tempel URL pada konstanta SHEET_URL di bagian <script> di atas.
+ Catatan: Canva tidak memiliki API untuk menerima data dari HTML; Google Sheet (bisa dibuka/diimpor ke Canva) dipakai sebagai penampung nilai.
+-->
+</body>
+</html>
